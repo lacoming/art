@@ -1,6 +1,7 @@
 // https://nuxt.com/docs/api/configuration/nuxt-config
 import vuetify, { transformAssetUrls } from 'vite-plugin-vuetify'
 export default defineNuxtConfig({
+  
   compatibilityDate: '2025-05-15',
   devtools: { enabled: true },
   ssr: true,
@@ -14,6 +15,7 @@ export default defineNuxtConfig({
     '@nuxt/fonts',
     '@nuxt/icon',
     '@nuxtjs/strapi',
+    'nuxt-music-flow',
     (_options, nuxt) => {
       nuxt.hooks.hook('vite:extendConfig', (config) => {
         // @ts-expect-error adfas asdas dasd
@@ -43,4 +45,5 @@ export default defineNuxtConfig({
       },
     },
   },
+  css: ['~/assets/styles/theme.css'],
 })

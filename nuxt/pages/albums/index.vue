@@ -1,8 +1,3 @@
-<script setup lang="ts">
-const { data: albums } = await useFetch('/api/albums')
-useHead({ title: 'Альбомы' })
-</script>
-
 <template>
   <section class="container">
     <h1>Альбомы</h1>
@@ -13,3 +8,8 @@ useHead({ title: 'Альбомы' })
     </ul>
   </section>
 </template>
+
+<script setup lang="ts">
+  const { data: albums } = await useFetch('/api/albums')
+  useHead({ title: 'Альбомы' })
+</script>

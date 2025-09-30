@@ -1,0 +1,10 @@
+:root { --page-bg: #171717; } /* твой цвет */
+
+html, body, #__nuxt { height: 100%; }
+body { background-color: var(--page-bg); }
+
+/* Vuetify контейнеры тоже перекрасим */
+.v-application,
+.v-main {
+  background-color: var(--page-bg) !important;
+}
