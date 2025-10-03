@@ -19,20 +19,20 @@
 
         <div class="group-1">
           <v-container fluid>
-                        <v-card class="step-card" elevation="0">
-                          <div>
-                            <h2>[01]</h2>
-                          </div>
-                          
-                          <div class="about-text text-start font-weight-bold">
-                            ГЛАС
-                          </div>
+            <v-card class="step-card" elevation="0">
+              <div>
+                <h2>[01]</h2>
+              </div>
+              
+              <div class="about-text text-start font-weight-bold">
+                ГЛАС
+              </div>
 
-                          <div class="about-text text-start">
-                            ИСТОЧНИК ОСНОВНОГО ШУМА. ПРЕОБРАЗУЕТ БОЛЬ ДАННЫХ В ЧИСТУЮ 
-                            АГРЕССИЮ. ЛИЦО-МАСКА — ВИЗУАЛИЗАТОР ВОКАЛА В РЕАЛЬНОМ ВРЕМЕНИ
-                          </div>
-                        </v-card>
+              <div class="about-text text-start">
+                ИСТОЧНИК ОСНОВНОГО ШУМА. ПРЕОБРАЗУЕТ БОЛЬ ДАННЫХ В ЧИСТУЮ 
+                АГРЕССИЮ. ЛИЦО-МАСКА — ВИЗУАЛИЗАТОР ВОКАЛА В РЕАЛЬНОМ ВРЕМЕНИ
+              </div>
+            </v-card>
             </v-container>
         </div>
 
@@ -95,21 +95,21 @@
         
       </div>
 
-      <div class="album-1 pb-16">
+      <div id="albums" class="album-1 pb-16">
         <v-container fluid>
             <v-row>
                       <v-card class="about-card" elevation="0">
-                        <div>
+                        <div class="pb-4">
                           <h2>NO_FUTURE</h2>
                         </div>
 
-                        <div class="about-text text-start">
+                        <div class="about-text text-start pb-8">
                           НЕ ЛЮДИ. НЕ ПРОГРАММА. КОЛЛЕКТИВНЫЙ СБОЙ НА ГРАНИ ЦИФРОВОГО И АНАЛОГОВОГО. ИХ МУЗЫКА - 
                           ЭТО ЗВУК ПЕРЕГРУЗКИ, ПРОТОКОЛ СОПРОТИВЛЕНИЯ И ФИДБЭК ОТ РЕАЛЬНОСТИ, КОТОРОЙ БОЛЬШЕ НЕТ.
                         </div>
                         <div class="button">
-                            <NuxtLink class="albumsBtn button-text" to="/albums">
-                              Все альбомы →
+                            <NuxtLink class="album-btn button-text" to="/albums">
+                              ВСЕ ТРЕКИ
                             </NuxtLink>
                         </div>
                       </v-card>
@@ -123,24 +123,27 @@
 
       <div class="album-2">
         <v-container fluid>
-            <v-row>
-                      <v-card class="about-card" elevation="0">
-                        <div>
-                          <h2>NO_FUTURE</h2>
-                        </div>
+            <v-row>              
+              <v-card class="about-card2 pl-8" elevation="0">
+                <div class="pb-4">
+                  <h2>PROTOCOL_SILENCE.ZIP</h2>
+                </div>
 
-                        <div class="about-text text-start">
-                          НЕ ЛЮДИ. НЕ ПРОГРАММА. КОЛЛЕКТИВНЫЙ СБОЙ НА ГРАНИ ЦИФРОВОГО И АНАЛОГОВОГО. ИХ МУЗЫКА - 
-                          ЭТО ЗВУК ПЕРЕГРУЗКИ, ПРОТОКОЛ СОПРОТИВЛЕНИЯ И ФИДБЭК ОТ РЕАЛЬНОСТИ, КОТОРОЙ БОЛЬШЕ НЕТ.
-                        </div>
-                        <div class="center">
-                            <NuxtLink class="albumsBtn" to="/albums">Все альбомы →</NuxtLink>
-                        </div>
-                      </v-card>
+                <div class="about-text text-start pb-8">
+                  ПЕРВОЕ ПРОЯВЛЕНИЕ. ЗВУК ПУСТОТЫ ПОСЛЕ ОБРЫВА СВЯЗИ. БОЛЬШЕ ЭМБИЕНТА И ДАБОВОГО ВЛИЯНИЯ.
+                </div>
+                <div class="button">
+                    <NuxtLink class="album-btn button-text" to="/albums">
+                      ВСЕ ТРЕКИ
+                    </NuxtLink>
+                </div>
+              </v-card>
 
-                      <v-card class="album-img" elevation="0">
-                        <img src="/image.png" alt="album-1">
-                      </v-card>
+              
+
+              <v-card class="album2-img" elevation="0">
+                <img src="/image.png" alt="album-2">
+              </v-card>
               </v-row>
           </v-container>
       </div>
@@ -151,10 +154,13 @@
 </template>
 
 <script setup lang="ts">
+  
     definePageMeta({
       layout: "default",
     });
+    
 
+    
 </script>
 
 <style scoped>
@@ -195,8 +201,7 @@ h2 {
   font-size: 16px;
   justify-content: center;
   text-align: center;
-  letter-spacing: 0.1em;
-  
+  letter-spacing: 0.1em; 
 }
 
 
@@ -217,18 +222,21 @@ h2 {
   font-family: 'Helvetica';
   font-weight: 700;
   font-size: 18px;
+  letter-spacing: 2px;
+  line-height: 24px;
+  color: white;
+  padding: 12px 16px 0 16px;
 }
 
-.albumsBtn {
+.album-btn {
   display: flex;
-  padding: 10px 16px;
+
   border: 2px solid #ffffff;
-  border-radius: 8px;
-  text-decoration: none;
-  
+  width: auto;
+  height: 48px;
 }
 
-.albumsBtn:hover {
+.albums-btn:hover {
   filter: brightness(0.95);
 }
 
@@ -253,17 +261,34 @@ h2 {
   justify-content: space-between;
 }
 
+.album-2 .v-row {
+  display: flex;
+  flex-direction: row-reverse;
+}
+
 .album-img {
   width: 380px;
   height: 380px;
 }
 
+.album2-img {
+  width: 580px;
+  height: 580px;
+}
+
 .about-card {
   width: 750px;
-  height: 214px;
+  height: auto;
   background-color: transparent !important;
   margin-top: auto; 
 }
+
+.about-card2 {
+  width: 580px;  /* под размер картинки */
+  background-color: transparent !important;
+  margin-top: auto;
+}
+
 
 
 .step-card {
