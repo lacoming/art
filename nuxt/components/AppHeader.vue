@@ -2,12 +2,11 @@
     <v-app-bar
       :class="['app-header', computedTheme]"
       :style="headerStyle"
-      height="64.8"
+      height="100"
       app
     >
       <v-container style="max-width: 1200px; margin: 0 auto">
         <v-row align="center" justify="center" no-gutters>
-          <v-spacer />
           <v-col class="d-flex align-center justify-center">
             <nav v-if="$vuetify.display.lgAndUp" class="header-links">
               <a
@@ -19,9 +18,6 @@
                 {{ link.title }}
               </a>
             </nav>
-            <v-btn icon class="ml-2" @click="$emit('toggle-drawer')">
-              <v-icon>mdi-menu</v-icon>
-            </v-btn>
           </v-col>
         </v-row>
       </v-container>
@@ -72,9 +68,9 @@
   });
   
   const headerLinks = [
-    { title: "Главная", href: "#" },
-    { title: "Альбомы", href: "#" },
-    { title: "Концерты", href: "#" },
+    { title: "ГЛАВНАЯ", href: "#" },
+    { title: "АЛЬБОМЫ", href: "/albums" },
+    { title: "КОНЦЕРТЫ", href: "#" },
   ];
   
   // Emits
@@ -97,8 +93,10 @@
   }
   
   .header-link {
-    font-size: 16px;
-    font-weight: 600;
+    font-size: 18px;
+    font-weight: 700;
+    font-family: 'Helvetica';
+    letter-spacing: 0.1em;
     text-decoration: none;
     text-transform: none;
     transition: color 0.2s ease-in-out;
