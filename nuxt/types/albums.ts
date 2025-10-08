@@ -1,4 +1,4 @@
-export interface albums {
+export interface Albomy {
     id: number;
     title: string;
     description: string;

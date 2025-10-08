@@ -23,14 +23,11 @@ export default defineNuxtConfig({
       })
     },
   ],
-  strapi: {
-    url: process.env.STRAPI_URL || 'http://localhost:1337',
-    prefix: '/api',
-    admin: '/admin',
-    version: 'v5',
-    cookie: {},
-    cookieName: 'strapi_jwt'
-  },
+  strapi: { 
+    url: process.env.STRAPI_URL || 'http://127.0.0.1:1337', 
+    prefix: '/api', 
+    version: 'v5' },
+
   runtimeConfig: {
     public: {
       strapi: {

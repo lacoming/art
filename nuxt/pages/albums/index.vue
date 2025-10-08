@@ -21,10 +21,13 @@
                       ЭТО ЗВУК ПЕРЕГРУЗКИ, ПРОТОКОЛ СОПРОТИВЛЕНИЯ И ФИДБЭК ОТ РЕАЛЬНОСТИ, КОТОРОЙ БОЛЬШЕ НЕТ.
                     </div>
                     <div class="button">
-                        <NuxtLink class="album-btn button-text" to="/albums">
+                      <NuxtLink class="album-btn button-text"  
+                        :to="albomies[0]?.slug ? `/albums/${albomies[0].slug}` : '#'"
+                        :ripple="false">
                           ВСЕ ТРЕКИ
-                        </NuxtLink>
+                      </NuxtLink>
                     </div>
+
                   </v-col>
 
                   <v-col elevation="0">
@@ -46,9 +49,11 @@
                       ПЕРВОЕ ПРОЯВЛЕНИЕ. ЗВУК ПУСТОТЫ ПОСЛЕ ОБРЫВА СВЯЗИ. БОЛЬШЕ ЭМБИДЕНТА И ДАБОВОГО ВЛИЯНИЯ.
                     </div>
                     <div class="button">
-                        <NuxtLink class="album-btn button-text" to="/albums">
+                      <NuxtLink class="album-btn button-text"  
+                        :to="albomies[1]?.slug ? `/albums/${albomies[1].slug}` : '#'"
+                        :ripple="false">
                           ВСЕ ТРЕКИ
-                        </NuxtLink>
+                      </NuxtLink>
                     </div>
                   </v-col>
 
@@ -57,21 +62,46 @@
                   </v-col >
               </v-row>
             </v-container>
-        </div>
+        </div>            
   
       </div>
   
   </template>
   
   <script setup lang="ts">
-    
-      definePageMeta({
-        layout: "default",
-      });
-      
-  
-      
-  </script>
+  // тип опционально
+  import type { Albomy } from '~/types/albums'
+
+  definePageMeta({ layout: 'default' })
+
+  const { find } = useStrapi()
+
+  // получаем ВСЕ записи, без slug-фильтра
+  const { data: albomiesResponse } = await useAsyncData('albomies-list', () =>
+    find('albomies', {
+      populate: ['cover', 'music'] // или '*'
+    })
+  )
+
+  // приводим strapi-формат к плоскому массиву
+  const albomies = computed(() =>
+  (albomiesResponse.value?.data ?? []).map((item: any) => ({
+    id: item.id,
+    ...item  // ← Просто разворачиваем весь объект
+  }))
+)
+
+  const searchQuery = ref('')
+
+  const filteredAlbums = computed(() => {
+    const q = searchQuery.value.trim().toLowerCase()
+    if (!q) return albomies.value
+    return albomies.value.filter((item: any) =>
+      (item.title || '').toLowerCase().includes(q) ||
+      (item.description || '').toLowerCase().includes(q)
+    )
+  })
+</script>
   
   <style scoped>
   h2 {
@@ -80,6 +110,17 @@
     font-weight: 400;
     color: white;
   }
+
+  .blog-content {
+  left: 0;
+  top: 0;
+  z-index: 1;
+  width: 100%;
+  height: auto;
+  transform: translateZ(0);
+  justify-content:space-evenly;
+  padding: 20px 0 0 0;
+}
   
   .hero-container {
     position: relative;
