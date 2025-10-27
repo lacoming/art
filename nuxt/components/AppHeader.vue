@@ -68,9 +68,9 @@
   });
   
   const headerLinks = [
-    { title: "ГЛАВНАЯ", href: "#" },
+    { title: "ГЛАВНАЯ", href: "/" },
     { title: "АЛЬБОМЫ", href: "/albums" },
-    { title: "КОНЦЕРТЫ", href: "#" },
+    { title: "КОНЦЕРТЫ", href: "/conserts" },
   ];
   
   // Emits
@@ -81,8 +81,9 @@
   
   <style scoped>
   .app-header.black {
-    background-color: #171717;
-    color: rgb(0, 0, 0);
+    background-color: rgba(23, 23, 23, var(--header-opacity));
+    color: #171717;
+    z-index: 1200 !important;
   }
   
   .header-links {
@@ -103,7 +104,7 @@
   }
   
   .app-header.black .header-link {
-    color: rgb(255, 255, 255);
+    color: #FFFFC5;
   }
   .app-header.black .header-link:hover {
     color: #888888;

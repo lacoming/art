@@ -1,49 +1,57 @@
 <template>
-  <v-container fluid>    
-    
-    <div>
-      <div> 
-        <div class="text-center">
-          
-          <v-row v-if="albomy" justify="center">
-            
-            <div class="hero-frame">
-              <NuxtImg :src="coverUrl" fit="cover" :modifiers="{ format: 'webp' }" class="hero-img" />
-                <div class="hero-text">
-                  <h1>{{ albomy.title }}</h1>
-                </div>
-            </div>
-            
-            <div>
-              <h2>ОБ АЛЬБОМЕ</h2>
-              <div class="about">
-              <BlogRichText v-if="albomy.description" :blocks="albomy.description"/>
-              </div>
-            </div>
-
-            <div v-if="tracks.length" class="tracks">
-              <h2>ТРЕКИ</h2>
-              <div class="track" v-for="(t, i) in tracks" :key="i">
-                <div class="track-title">{{ t.name }}</div>
-                <audio :src="t.url" controls preload="none"></audio>
-              </div>
-            </div>
-      
-          </v-row>
-
-          <v-row v-else justify="center">
-            <h1>Запрашиваемая вами страница не найдена</h1>
-          </v-row>
-
+    <div class="page-container">
+      <div v-if="albomy" class="album-section">
+        
+        <!-- LEFT: Album Cover -->
+        <div class="album-cover-wrapper">
+          <NuxtImg :src="coverUrl" class="album-cover" />
         </div>
+
+        <!-- RIGHT: Album Info -->
+        <div class="album-info">
+          <div class="album-header">
+            <h1>{{ albomy.title }}</h1>
+            <div class="about">
+              <BlogRichText v-if="albomy.description" :blocks="albomy.description"/>
+            </div>
+          </div>
+
+          <!-- Tracks List -->
+          <div v-if="tracks.length" class="tracks-section">
+            <div class="tracks-list">
+              <div 
+                class="track" 
+                v-for="(t, i) in tracks" 
+                :key="i"
+                :class="{ 'track-active': isCurrentTrack(i) }"
+                @click="handleTrackClick(i)"
+              >
+                <div class="track-number">
+                  <span v-if="!isCurrentTrack(i) || !isPlaying">{{ String(i + 1).padStart(2, '0') }}</span>
+                </div>
+                <div class="track-info">
+                  <div class="track-title">{{ t.name }}</div>
+                </div>
+                <div class="track-duration">{{ formatDuration(t.duration) }}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
       </div>
+
+      <div v-else class="not-found">
+        <h1>Запрашиваемая вами страница не найдена</h1>
+      </div>
+
+      <!-- Audio Player -->
+      <AudioPlayer />
     </div>
-  </v-container>
 </template>
 
-
 <script setup lang="ts">
-  
+  import { useAudioPlayer } from '~/composables/useAudioPlayer'
+  import type { Track } from '~/composables/useAudioPlayer'
 
   definePageMeta({ layout: 'default' })
 
@@ -51,19 +59,15 @@
   const route = useRoute()
   const slug = route.params.slug as string
 
-  // получаем все альбомы и фильтруем по slug
   const { data: albomiesResponse } = await useAsyncData('albomies-all', () =>
     find('albomies', {
       populate: ['cover', 'music']
     })
   )
 
-  // находим альбом по slug
   const albomy = computed<any>(() => {
     const albums: any[] = albomiesResponse.value?.data ?? []
-    
     const foundAlbum = albums.find((item: any) => {
-      // Пробуем оба варианта - новый формат Strapi v5 и старый
       const albumSlug = item.slug || item.attributes?.slug
       return albumSlug === slug
     })
@@ -75,116 +79,234 @@
     } as any
   })
 
-  // Получаем полный URL обложки из Strapi (поддержка v5 и legacy формата)
   const coverUrl = computed(() => {
     const cover: any = (albomy.value as any)?.cover
     const url = cover?.url || cover?.data?.attributes?.url
     return url ? useStrapiMedia(url) : '/back3.png'
   })
 
-  type Track = { name: string; url: string; mime?: string; size?: number; duration?: number }
-
-  // Нормализуем треки из Strapi (поддержка v5 и legacy)
   const tracks = computed<Track[]>(() => {
     const music: any[] = ((albomy.value as any)?.music) || []
     return music
       .map((m: any) => {
-        // v5 single media items often are objects with url; relations can be { data: {...attributes} }
         const file = m?.url ? m : m?.data?.attributes
         if (!file?.url) return null
         return {
           name: file.name || file.alternativeText || 'Без названия',
           url: useStrapiMedia(file.url),
-          mime: file.mime || undefined,
-          size: file.size || undefined,
           duration: file.duration || undefined,
+          albumTitle: albomy.value?.title,
+          albumCover: coverUrl.value
         } as Track
       })
       .filter((x): x is Track => Boolean(x))
   })
+
+  const formatDuration = (seconds?: number) => {
+    if (!seconds) return '--:--'
+    const mins = Math.floor(seconds / 60)
+    const secs = Math.floor(seconds % 60)
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`
+  }
+
+  // Audio Player Integration
+  const { 
+    setPlaylist, 
+    playTrack, 
+    currentTrack, 
+    currentTrackIndex,
+    isPlaying 
+  } = useAudioPlayer()
+
+  // Set playlist when tracks are loaded
+  watch(tracks, (newTracks) => {
+    if (newTracks.length > 0) {
+      setPlaylist(newTracks, albomy.value?.title, coverUrl.value)
+    }
+  }, { immediate: true })
+
+  const handleTrackClick = (index: number) => {
+    const track = tracks.value[index]
+    if (track) {
+      playTrack(track, index)
+    }
+  }
+
+  const isCurrentTrack = (index: number) => {
+    return currentTrackIndex.value === index && currentTrack.value !== null
+  }
 </script>
 
 <style scoped>
-  h1 {
-    font-family: 'Rostov';
-    font-size: 180px;
-    font-weight: 400;
-    color: white;
-    margin: 0;  
+  .page-container {
+    width: 100%;
+    padding: 10% 5% 120px 5%; /* Added bottom padding for audio player */
   }
 
-  h2 {
-    font-family: 'Rostov';
-    font-size: 52px;
-    font-weight: 400;
-    color: white;
-    line-height: 62px;
-    padding: 32px 0 0 0;
+  .album-section {
+    display: flex;
+    gap: 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+    align-items: flex-start;
+  }
+
+  .album-cover-wrapper {
+    flex: 0 0 auto;
+    width: 580px;
+    height: 580px;
+  }
+
+  .album-cover {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+
+  .album-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+
+  h1 {
+    font-family: "IFKica";
+    font-size: 32px;
+    font-weight: 300;
+    color: #FE5907;
+    margin: 0 0 24px 0;
   }
 
   .about {
-      font-family: 'Helvetica';
-      color: white;
-      font-weight: 400;
-      font-size: 16px;
-      justify-content: center;
-      text-align: center;
-      letter-spacing: 0.1em; 
-    }
-
-
-  .hero-container {
-    position: relative;
-    display: inline-block;
+    font-family: 'NeueMachina';
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFFFC5;
+    line-height: 24px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
   }
 
-  .hero {
-    position: absolute;
-    bottom: 0;          /* прижимает к низу */
-    left: 50%;          /* центр по горизонтали */
-    transform: translateX(-50%); /* центрирует только по X */
-    z-index: 2;  
-    padding-bottom: 0;  /* Центрируем картинку */
+  h2 {
+    font-family: 'NeueMachina';
+    font-size: 16px;
+    font-weight: 400;
+    color: #FFFFC5;
+    line-height: 24px;
+    letter-spacing: 0.05em;
+    margin: 0 0 24px 0;
+    text-transform: uppercase;
   }
 
-  .hero-frame { 
-    position: relative; 
-    width: 100%; 
-    max-width: 540px; 
-    max-height: 540px;
-    margin: 0 auto; 
-    aspect-ratio: 1/1; 
+  .tracks-section {
+    margin-top: 0px;
   }
 
-  .hero-img { 
-    width: 100%; 
-    height: 100%; 
-    object-fit: cover; 
-    display: block; 
-  }
-  
-  .hero-text {
-    position: absolute;
-    bottom: 0;          /* прижимает к низу */
-    left: 50%;          /* центр по горизонтали */
-    transform: translateX(-50%); /* центрирует только по X */
-    z-index: 2;  
-    padding-bottom: 0; 
-  }
-
-  .tracks {
-    margin-top: 24px;
+  .tracks-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
   }
 
   .track {
-    margin: 12px auto;
-    width: 50%;
-    color: white;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    border-bottom: 1px solid rgba(255, 255, 197, 0.1);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-radius: 8px;
+    margin-bottom: 4px;
+  }
+
+  .track:hover {
+    background: rgba(254, 89, 7, 0.05);
+    border-bottom-color: rgba(254, 89, 7, 0.2);
+    transform: translateX(4px);
+  }
+
+  .track-active {
+    background: rgba(254, 89, 7, 0.1);
+    border-bottom-color: rgba(254, 89, 7, 0.3);
+  }
+
+  .track-active .track-number,
+  .track-active .track-title,
+  .track-active .track-duration {
+    color: #FE5907;
+  }
+
+  .track-number {
+    font-family: 'IFKica';
+    font-size: 32px;
+    font-weight: 400;
+    color: #FE5907;
+    min-width: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: color 0.3s ease;
+  }
+
+  .playing-icon {
+    color: #FE5907;
+  }
+
+  .track-info {
+    flex: 1;
+    min-width: 0;
   }
 
   .track-title {
-    margin-bottom: 8px;
     font-family: 'Helvetica';
+    font-size: 14px;
+    font-weight: 400;
+    color: #FFFFC5;
     letter-spacing: 0.1em;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+  }
+
+  .track-duration {
+    font-family: 'NeueMachina';
+    font-size: 14px;
+    color: #FFFFC5;
+    min-width: 50px;
+    text-align: right;
+    transition: color 0.3s ease;
+  }
+
+  .not-found {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 60vh;
+  }
+
+  .not-found h1 {
+    font-size: 32px;
+    color: #FE5907;
+  }
+
+  @media (max-width: 768px) {
+    .album-section {
+      flex-direction: column;
+      gap: 30px;
+    }
+
+    .album-cover-wrapper {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 1;
+    }
+
+    h1 {
+      font-size: 32px;
+    }
+
+    .album-section {
+      padding: 0;
+    }
   }
 </style>

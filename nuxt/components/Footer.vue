@@ -29,10 +29,6 @@
                     <img class="imge" src="/footer/yandex.png" />
                 </a>
             </div>
-
-        <div class="footer-nav pt-8">
-          <NuxtLink to="/#albums" class="footer-anchor-btn">АЛЬБОМЫ</NuxtLink>
-        </div>
         </div>
       <div class="about-text text-center pt-16">
         ЭТОТ САЙТ - ТВОРЧЕСКИЙ ЭКСПЕРИМЕНТ И УЧЕБНЫЙ ПРОЕКТ.<br>
@@ -48,10 +44,12 @@
   
   <style lang="scss" scoped>
     h2 {
-        font-family: 'Rostov';
+        font-family: 'IFKica';
         font-size: 52px;
-        font-weight: 400;
-        color: white;
+        font-weight: 300;
+        line-height: 62px;
+        letter-spacing: 0.05em;
+        color: #FE5907;
     }
 
     .hero {
@@ -102,13 +100,13 @@
     }
 
     .about-text {
-        font-family: 'Helvetica';
-        color: #ffffff;
+        font-family: 'NeueMachina';
+        color: #FFFFC5;
         font-weight: 400;
         font-size: 16px;
         justify-content: center;
         text-align: center;
-        letter-spacing: 0.1em; 
+        letter-spacing: 0.08em; 
         line-height: 24px;
     }
 

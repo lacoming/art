@@ -112,14 +112,6 @@ defineProps<{
 
 <style lang="scss" scoped>
 .rich-text {
-  font-family: 'Helvetica';
-    color: #ffffff;
-    font-weight: 400;
-    font-size: 16px;
-    justify-content: center;
-    text-align: center;
-    letter-spacing: 0.1em;
-    padding: 0  25%;
 
   h3 {
     font-family: 'Gilroy', Arial, sans-serif;

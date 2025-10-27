@@ -69,46 +69,38 @@
   </template>
   
   <script setup lang="ts">
-  // тип опционально
-  import type { Albomy } from '~/types/albums'
+   
 
-  definePageMeta({ layout: 'default' })
+    definePageMeta({ layout: 'default' })
+    
+    const { find } = useStrapi()
 
-  const { find } = useStrapi()
-
-  // получаем ВСЕ записи, без slug-фильтра
-  const { data: albomiesResponse } = await useAsyncData('albomies-list', () =>
-    find('albomies', {
-      populate: ['cover', 'music'] // или '*'
-    })
-  )
-
-  // приводим strapi-формат к плоскому массиву
-  const albomies = computed(() =>
-  (albomiesResponse.value?.data ?? []).map((item: any) => ({
-    id: item.id,
-    ...item  // ← Просто разворачиваем весь объект
-  }))
-)
-
-  const searchQuery = ref('')
-
-  const filteredAlbums = computed(() => {
-    const q = searchQuery.value.trim().toLowerCase()
-    if (!q) return albomies.value
-    return albomies.value.filter((item: any) =>
-      (item.title || '').toLowerCase().includes(q) ||
-      (item.description || '').toLowerCase().includes(q)
+    // получаем ВСЕ записи, без slug-фильтра
+    const { data: albomiesResponse } = await useAsyncData('albomies-list', () =>
+      find('albomies', {
+        populate: ['cover', 'music'] 
+      })
     )
-  })
-</script>
+
+    // TODO: Slice убрать лишние компоненты
+    // Упростить логику получения данных Страпи(либо убрать маппинг, либо обосновать)
+
+    // приводим strapi-формат к плоскому массиву
+    const albomies = computed(() =>
+      (albomiesResponse.value?.data ?? []).map((item: any) => ({
+        id: item.id,
+        ...item  // ← Просто разворачиваем весь объект
+      }))
+    )
+  </script>
   
   <style scoped>
   h2 {
-    font-family: 'Rostov';
+    font-family: 'IFKica';
     font-size: 180px;
-    font-weight: 400;
+    font-weight: 300;
     color: white;
+    letter-spacing: -3%;
   }
 
   .blog-content {
